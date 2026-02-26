@@ -52,21 +52,34 @@ The dataset is derived from the [QFabric](https://openaccess.thecvf.com/content/
 - Dimensionality reduction and feature selection explored
 
 ### 3. Model Selection & Training
-Multiple classifiers tested and compared:
-- K-Nearest Neighbours (baseline ~40% F1)
-- Logistic Regression
-- Support Vector Machine
-- Random Forest
-- Gradient Boosting / XGBoost
-- Neural Networks
+We started from a simple **k-Nearest Neighbors (k-NN)** baseline (~40% F1) and progressively moved toward more expressive models.
 
-Hyperparameter tuning and cross-validation were performed. Ensemble strategies were explored to improve performance.
+Linear approaches such as **Logistic Regression** were quickly discarded. The decision boundaries between the six land-use classes are inherently non-linear, making linear models a poor fit for this task.
+
+Tree-based ensemble methods proved significantly more effective:
+
+- **Random Forest** provided a solid improvement thanks to its ability to capture complex feature interactions.
+- **XGBoost** was ultimately selected as the final model.
+
+XGBoost’s gradient boosting strategy — sequentially correcting residual errors — is particularly well-suited for tabular, heterogeneous data like ours (a mix of geometric features, one-hot encoded categorical variables, and temporal indicators).
+
+Compared to bagging methods, it:
+- Handles class imbalance more robustly  
+- Is more resilient to noisy labels  
+- Includes built-in regularization (L1/L2) that helped prevent overfitting on our relatively small dataset (Train: (296146, 104),  Test: (120526, 104))
+
+### Hyperparameter Tuning
+
+Hyperparameters were optimized via cross-validation, including:
+
+- Learning rate  
+- Maximum tree depth  
+- Number of estimators  
+- Subsample ratio  
 
 ### 4. Evaluation
 
 **Metric:** Mean F1-Score (macro average across all 6 classes).
-
-> **Note on train/test split:** The final model does **not** use a held-out validation split. Since the test set labels were never released — evaluation was exclusively done by submitting to Kaggle — the final model was trained on the **entire training set** to maximize performance on the unseen test data assessed by the platform.
 
 ---
 
